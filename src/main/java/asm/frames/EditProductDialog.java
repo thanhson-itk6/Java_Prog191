@@ -75,46 +75,125 @@ public class EditProductDialog extends JDialog {
     }
 
     private void onOK() {
-        String error = validateContent();
 
-        errorLabel.setText(error);
 
-        if (error.isEmpty() == false) {
-            return;
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            checkID(idInput, sb);
+            checkName(nameInput, sb);
+            checkPrice(priceInput, sb);
+            checkQuantity(quantityInput, sb);
+            if (sb.length() > 0) {
+                JOptionPane.showMessageDialog(this, sb.toString(), "Invalid Data", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+
+            product.name = nameInput.getText();
+            product.description = descInput.getText();
+            product.quantity = Integer.parseInt(quantityInput.getText());
+            product.price = Double.parseDouble(priceInput.getText());
+            product.touch();
+
+            WarehouseScreen.frame.managerFrame.updateTable();
+
+            dispose();
+            JOptionPane.showMessageDialog(this, "Edit Successful");
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
 
-        product.name = nameInput.getText();
-        product.description = descInput.getText();
-        product.quantity = Integer.parseInt(quantityInput.getText());
-        product.price = Double.parseDouble(priceInput.getText());
 
-        product.touch();
 
-        WarehouseScreen.frame.managerFrame.updateTable();
 
-        dispose();
+
+    }
+    private void checkID(JTextField field, StringBuilder sb) {
+
+        String id = field.getText();
+        if (id.isEmpty()) {
+            sb.append("ID is required\n");
+        }
+        try {
+
+            if (WarehouseScreen.frame.managerFrame.getProducts().has(id)) {
+                sb.append("ID already exists\n");
+
+            }
+        } catch (Exception e) {
+
+
+        }
+
     }
 
-    private String validateContent() {
-        String error = "";
+    private void checkName(JTextField field, StringBuilder sb) {
 
-        if (nameInput.getText().isEmpty()) {
-            error = "Name is required\n";
+        try {
+
+            String name = field.getText();
+            if (name.isEmpty()) {
+                sb.append("Name is required\n");
+            }
+
+
+        } catch (Exception e) {
+            sb.append("Error name: \n");
+
         }
 
-        if (descInput.getText().isEmpty()) {
-            error = "Description is required\n";
+    }
+
+    private void checkQuantity(JTextField field, StringBuilder sb) {
+
+        String quantity = field.getText();
+        if (quantity.isEmpty()) {
+            sb.append("quantity is required\n");
         }
 
-        if (quantityInput.getText().isEmpty()) {
-            error = "Quantity is required\n";
+        try {
+            char[] characters = quantity.toCharArray();
+            for (char character : characters) {
+                if (Character.isLetter(character)) {
+                    sb.append("Quantity does not contain letter\n");
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            sb.append("Invalid Quantity(default number)\n");
         }
 
-        if (priceInput.getText().isEmpty()) {
-            error = "Price is required\n";
+
+    }
+
+    private void checkPrice(JTextField field, StringBuilder sb) {
+
+//        double price = Double.parseDouble(field.getText());
+        String price = field.getText();
+        if (price.isEmpty()) {
+            sb.append("Price is required\n");
+            try {
+                char[] characters = price.toCharArray();
+                for (char character : characters) {
+                    if (Character.isLetter(character)) {
+                        sb.append("price does not contain letter\n");
+                        break;
+                    }
+                }
+//            if (price<0) {
+//                sb.append("price >0\n");
+
+
+            } catch (Exception e) {
+                sb.append("Invalid Price(default number)\n");
+            }
+
+
         }
 
-        return error;
     }
 
     private void onCancel() {

@@ -62,8 +62,17 @@ public class ManagerFrame extends JFrame {
             if (indexSelected < 0 || indexSelected >= productModel.getRowCount()) {
                 return;
             }
+            int response = JOptionPane.showConfirmDialog(
+                    null,
+                    "Are you sure to delete  data?",
+                    "Confirm delete",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (response == JOptionPane.YES_OPTION) {
+                remove((String) productModel.getValueAt(indexSelected, 0));
+                infoLabel.setText("All data was deleted!!!");
+            }
 
-            remove((String) productModel.getValueAt(indexSelected, 0));
         });
 
         editButton.addActionListener(e -> {
